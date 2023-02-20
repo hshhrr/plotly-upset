@@ -1,10 +1,38 @@
 import numpy as np
+import pandas as pd
 
 
-def get_nodes_and_edges(n_cat: int):
+def individual_set_size(df: pd.DataFrame) -> list:
+    return [len(df[df.iloc[:, i] == 1]) for i in range(len(df.columns))]
+
+
+def possible_intersections(n_cat: int) -> tuple:
     n_ttc = 2 ** n_cat
     ttc_dec = np.arange(n_ttc)
     ttc_str = [np.binary_repr(i, width=n_cat) for i in ttc_dec]
+    ttc_bin = np.array([np.fromiter(x, dtype=int) for x in ttc_str])
+
+    return ttc_str, ttc_bin
+
+
+def intersecting_set_size(df: pd.DataFrame) -> list:
+    intersection_sizes = list()
+    _, intersections = possible_intersections(len(df.columns))
+
+    for x in intersections:
+        temp_df = df
+        for i, v in enumerate(x):
+            temp_df = temp_df[temp_df.iloc[:, i] == v]
+        
+        intersection_sizes.append(len(temp_df))
+
+    return intersection_sizes
+
+
+def get_nodes_and_edges(n_sets: int):
+    n_ttc = 2 ** n_sets
+    ttc_dec = np.arange(n_ttc)
+    ttc_str = [np.binary_repr(i, width=n_sets) for i in ttc_dec]
     ttc_bin = np.array([np.fromiter(x, dtype=int) for x in ttc_str])
 
     ones = np.ones_like(ttc_bin)
