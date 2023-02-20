@@ -6,10 +6,10 @@ def individual_set_size(df: pd.DataFrame) -> list:
     return [len(df[df.iloc[:, i] == 1]) for i in range(len(df.columns))]
 
 
-def possible_intersections(n_cat: int) -> tuple:
-    n_ttc = 2 ** n_cat
+def possible_intersections(n_sets: int) -> tuple:
+    n_ttc = 2 ** n_sets
     ttc_dec = np.arange(n_ttc)
-    ttc_str = [np.binary_repr(i, width=n_cat) for i in ttc_dec]
+    ttc_str = [np.binary_repr(i, width=n_sets) for i in ttc_dec]
     ttc_bin = np.array([np.fromiter(x, dtype=int) for x in ttc_str])
 
     return ttc_str, ttc_bin
