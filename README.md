@@ -124,3 +124,20 @@ fig.show()
 ```
 
 ![example-04](https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/example-04.png?raw=true)
+
+## Citation
+
+If you use an UpSet figure in a publication using this library, please cite the [original paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/).
+
+```bibtex
+@article{2014_infovis_upset,
+    title = {UpSet: Visualization of Intersecting Sets},
+    author = {Alexander Lex and Nils Gehlenborg and Hendrik Strobelt and Romain Vuillemot and Hanspeter Pfister},
+    journal = {IEEE Transactions on Visualization and Computer Graphics (InfoVis)},
+    doi = {10.1109/TVCG.2014.2346248},
+    volume = {20},
+    number = {12},
+    pages = {1983--1992},
+    year = {2014}
+}
+```
