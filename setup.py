@@ -13,6 +13,5 @@ setup(
     install_requires=[
         'plotly>=5.5.0',
         'numpy>=1.21.6',
-        'pandas>=1.3.5',
     ]
 )
