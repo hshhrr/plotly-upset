@@ -23,7 +23,8 @@ def plot_upset(
     sorted_x: str = None,
     sorted_y: str = None,
     # anchor_df_index: int = 0,
-    subplot_config: plotly.graph_objs._figure.Figure = None,
+    # subplot_config: plotly.graph_objs._figure.Figure = None,
+    subplot_config = None,
     height: int = 400,
     width: int = 640,
 ):
