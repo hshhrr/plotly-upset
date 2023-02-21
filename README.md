@@ -129,6 +129,8 @@ fig.show()
 ### Sorting and Removing Zero Values
 
 ```python
+from plotly.subplots import make_subplots
+
 # Data - Source https://github.com/hms-dbmi/upset-altair-notebook
 df0 = pd.read_csv(
     'https://raw.githubusercontent.com/hms-dbmi/upset-altair-notebook/master/data/covid_symptoms_table.csv',
