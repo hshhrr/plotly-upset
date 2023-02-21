@@ -1,9 +1,17 @@
 import numpy as np
 
+import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from .util import *
+
+
+import numpy as np
+
+import plotly
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 
 def plot_upset(
@@ -11,7 +19,15 @@ def plot_upset(
     legendgroups: list,
     set_names: list = None,
     marker_colors: list = None,
+    exclude_zeros: bool = False,
+    sorted_x: str = None,
+    sorted_y: str = None,
+    # anchor_df_index: int = 0,
+    subplot_config: plotly.graph_objs._figure.Figure = None,
+    height: int = 400,
+    width: int = 640,
 ):
+    # Error Handling
     df_columns = [df.columns for df in dataframes]
     lengths = [len(x) for x in df_columns]
     df = dataframes[0]
@@ -22,38 +38,94 @@ def plot_upset(
         raise Exception("DataFrames don't share same columns.")
     elif len(legendgroups) != len(dataframes):
         raise Exception("Number of DataFrames and Number of Legend Groups don't match.")
+    # elif anchor_df_index >= len(dataframes):
+    #     raise Exception("Sorting Anchor DataFrame Index is out of range.")
     elif set_names is not None and len(set_names) != len(df.columns):
         raise Exception("Number of DataFrame Columns and Number of Set Names don't match.")
     elif marker_colors is not None and len(marker_colors) != len(dataframes):
         raise Exception("Number of DataFrames and Number of Marker Colors don't match.")
+    elif sorted_x is not None and (sorted_x.lower() not in ["a", "d", "ascending", "descending"]):
+        raise Exception("Unknown sorting order.")
+    elif sorted_y is not None and (sorted_y.lower() not in ["a", "d", "ascending", "descending"]):
+        raise Exception("Unknown sorting order.")
+    elif (sorted_x is not None or sorted_x is not None) and len(dataframes) > 1:
+        raise Exception("Sorting isn't available for multiple DataFrames.")
+    elif exclude_zeros is True and len(dataframes) > 1:
+        raise Exception("Zero value exclusion isn't available for multiple DataFrames.")
 
     if set_names is not None:
         sets = set_names
     else:
         sets = df.columns
 
-    fig = make_subplots(
-        rows=2, cols=2,
-        row_heights=[0.7, 0.3],
-        column_widths=[0.4, 0.6],
-        vertical_spacing = 0.05,
-        horizontal_spacing = 0.125,
-        shared_xaxes=True
-    )
+    # Plotting
+    if subplot_config is not None:
+        fig = subplot_config
+    else:
+        fig = make_subplots(
+            rows=2, cols=2,
+            row_heights=[0.7, 0.3],
+            column_widths=[0.4, 0.6],
+            vertical_spacing = 0.05,
+            horizontal_spacing = 0.125,
+            shared_xaxes=True
+        )
 
     string_repr, _ = possible_intersections(len(sets))
-    xt, xf, edges = get_nodes_and_edges(n_sets=len(sets))
+    zeroed_indices = None
+
+    # cumulative_int_ss = None
+    
+    # for i, df in enumerate(dataframes):
+    #     int_ss = np.array(intersecting_set_size(df))
+
+    #     if cumulative_int_ss is None:
+    #         cumulative_int_ss = int_ss
+    #     else:
+    #         cumulative_int_ss = np.add(cumulative_int_ss, int_ss)
     
     for i, df in enumerate(dataframes):
-        int_ss = intersecting_set_size(df)
-        ind_ss = individual_set_size(df)
+        int_ss = np.array(intersecting_set_size(df))
+        ind_ss = np.array(individual_set_size(df))
+
+        _int_ss = int_ss
+        _string_repr = string_repr
+        t, f, edges = get_nodes_and_edges(n_sets=len(sets))
+
+        if sorted_x is not None:
+            a, b, c = _int_ss, _string_repr, np.arange(0, 2 ** len(sets))
+            order = False if sorted_x.lower() == "a" or sorted_x.lower() == "ascending" else True
+            sorted_list = sorted(zip(a, b, c), reverse=order)
+            transposed = np.array(sorted_list).T
+
+            a, b, c = transposed
+
+            _int_ss, _string_repr, _sorted_sequence = a.astype(int), b, c.astype(int)
+
+            t, f, edges = get_sorted_nodes_and_edges(
+                t=t, f=f, edges=edges,
+                sorted_sequence=_sorted_sequence
+            )
+
+        if exclude_zeros:
+            zeroed_indices = np.where(_int_ss == 0)[0]
+            _string_repr = np.array(_string_repr)[_int_ss != 0]
+            _int_ss = _int_ss[_int_ss != 0]
+
+            t, f, edges = get_nonzero_nodes_and_edges(
+                t=t, f=f, edges=edges,
+                n_sets=len(sets),
+                zero_indices=zeroed_indices
+            )
+
+        plot_range_x = len(_int_ss)
 
         # ROW 1, COL 2
         fig.add_trace(
             go.Bar(
-                x=string_repr,
-                y=int_ss,
-                text=int_ss,
+                x=_string_repr,
+                y=_int_ss,
+                text=_int_ss,
                 texttemplate='%{text:}', textposition='outside', textfont_size=12, textangle=-90, cliponaxis=False,
                 legendgroup=legendgroups[i],
                 name=legendgroups[i],
@@ -62,7 +134,7 @@ def plot_upset(
             row=1, col=2
         )
 
-        # ROW 2, COL 1
+        # # ROW 2, COL 1
         fig.add_trace(
             go.Bar(
                 x=ind_ss,
@@ -77,6 +149,63 @@ def plot_upset(
             ),
             row=2, col=1
         )
+
+        # ROW 2, COL 2
+        xtf = np.concatenate(t[0], axis=None)
+        ytf = np.concatenate(t[1], axis=None)
+        _ytf = np.array([sets[y] for y in ytf])
+        fig.add_trace(
+            go.Scatter(
+                x=xtf,
+                y=_ytf,
+                legendgroup='True',
+                name='True',
+                mode='markers', 
+                marker=dict(line_width=1, color='#000000', line_color='#000000', symbol='circle', size=12),
+                showlegend=False,
+            ),
+             row=2, col=2
+        )
+
+        xff = np.concatenate(f[0], axis=None)
+        yff = np.concatenate(f[1], axis=None)
+        _yff = np.array([sets[y] for y in yff])
+        fig.add_trace(
+            go.Scatter(
+                x=xff,
+                y=_yff,
+                legendgroup='False',
+                name='False',
+                mode='markers', 
+                marker=dict(line_width=1, color='#FFFFFF', line_color='#000000', symbol='circle', size=12),
+                showlegend=False,
+            ),
+            row=2, col=2
+        )
+
+        for e in edges:
+            x, y = np.array(e).T
+            fig.add_trace(
+                go.Scatter(
+                    x=x, y=[sets[y[0]], sets[y[1]]],
+                    legendgroup='True',
+                    name='True',
+                    mode='lines',
+                    line_color='#000000',
+                    showlegend=False,
+                ),
+                row=2, col=2
+            )
+
+        # for i in range(len(sets)):
+        #     if i % 2 == 0:
+        #         fig.add_hrect(
+        #             y0=i - 0.5,
+        #             y1=i + 0.5,
+        #             fillcolor="black",
+        #             opacity=0.2,
+        #             row=2, col=2
+        #         )
 
     # ROW 1, COL 2
     fig.update_xaxes(
@@ -132,59 +261,8 @@ def plot_upset(
         row=2, col=1
     )
 
-    # ROW 2, COL 2
-    for x in xt:
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=sets,
-                legendgroup='True',
-                name='True',
-                mode='markers', 
-                marker=dict(line_width=1, color='#000000', line_color='#000000', symbol='circle', size=12),
-                showlegend=False,
-            ),
-            row=2, col=2
-        )
-
-    for x in xf:
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=sets,
-                legendgroup='False',
-                name='False',
-                mode='markers', 
-                marker=dict(line_width=1, color='#E0E0E0', line_color='#000000', symbol='circle', size=12),
-                showlegend=False,
-            ),
-            row=2, col=2
-        )
-
-    for e in edges:
-        x, y = np.array(e).T
-        fig.add_trace(
-            go.Scatter(
-                x=x, y=[sets[y[0]], sets[y[1]]],
-                legendgroup='True',
-                name='True',
-                mode='lines',
-                line_color='#000000',
-                showlegend=False,
-            ),
-            row=2, col=2
-        )
-
-    for i in range(len(sets)):
-        if i % 2 == 0:
-            fig.add_hrect(
-                y0=i - 0.5,
-                y1=i + 0.5,
-                fillcolor="black",
-                opacity=0.1,
-                row=2, col=2
-            )
-
+    
+    # ROW 2 COL 2
     fig.update_xaxes(
         side='bottom',
         showline=True,
@@ -205,7 +283,8 @@ def plot_upset(
     )
 
     fig.update_xaxes(
-        range=[0. - 0.5, (2 ** len(sets)) - 0.5],
+        range=[0. - 0.5, plot_range_x - 0.5],
+        # range=[0. - 0.5, (2 ** len(sets)) - 0.5],
         col=2
     )
 
@@ -228,8 +307,8 @@ def plot_upset(
             x=0
         ),
         showlegend=True,
-        height=400,
-        width=640,
+        height=height,
+        width=width,
         paper_bgcolor='white',
         plot_bgcolor='white',
         hovermode='closest',

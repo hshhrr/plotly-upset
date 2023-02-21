@@ -125,6 +125,43 @@ fig.show()
 
 ![example-04](https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/example-04.png?raw=true)
 
+
+### Sorting and Removing Zero Values
+
+```python
+# Data - Source https://github.com/hms-dbmi/upset-altair-notebook
+df0 = pd.read_csv(
+    'https://raw.githubusercontent.com/hms-dbmi/upset-altair-notebook/master/data/covid_symptoms_table.csv',
+    usecols=lambda x: x != 'id'
+)
+
+# Plotting
+fig = plot_upset(
+    dataframes=[df0],
+    legendgroups=["COVID-19 Symptoms"],
+    exclude_zeros=True,
+    sorted_x="d",
+    subplot_config=make_subplots(
+        rows=2, cols=2,
+        row_heights=[0.7, 0.3],
+        column_widths=[0.2, 0.8],
+        vertical_spacing = 0.05,
+        horizontal_spacing = 0.2,
+        shared_xaxes=True
+    ),
+)
+
+fig.update_layout(
+    width=900,
+    font_family="Jetbrains Mono",
+)
+
+fig.show()
+```
+
+![example-05](https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/example-05.png?raw=true)
+
+
 ## Citation
 
 If you use an UpSet figure in a publication using this library, please cite the [original paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/).
