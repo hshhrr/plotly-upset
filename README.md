@@ -25,7 +25,8 @@ df = pd.DataFrame(
 # Plotting
 fig = plot_upset(
     dataframes=[df],
-    legendgroups=["Group X"]
+    legendgroups=["Group X"],
+    marker_size=16,
 )
 
 fig.update_layout(
@@ -40,8 +41,8 @@ fig.show()
 ### Scaling (Sets)
 
 ```python
-# 4 Sets
-set_list = ["Set A", "Set B", "Set C", "Set D"]
+# 5 Sets
+set_list = ["Set A", "Set B", "Set C", "Set D", "Set E"]
 df = pd.DataFrame(
     np.random.randint(0, 2, size=(10_000, len(set_list))), columns=set_list
 )
@@ -49,7 +50,10 @@ df = pd.DataFrame(
 # Plotting
 fig = plot_upset(
     dataframes=[df],
-    legendgroups=["Group X"]
+    legendgroups=["Group X"],
+    column_widths=[0.2, 0.8],
+    horizontal_spacing = 0.075,
+    marker_size=10,
 )
 
 fig.update_layout(
@@ -80,7 +84,8 @@ df2 = pd.DataFrame(
 # Plotting
 fig = plot_upset(
     dataframes=[df0, df1, df2],
-    legendgroups=["Group X", "Group Y", "Group Z"]
+    legendgroups=["Group X", "Group Y", "Group Z"],
+    marker_size=16,
 )
 
 fig.update_layout(
@@ -114,6 +119,7 @@ fig = plot_upset(
     dataframes=[df0, df1],
     legendgroups=["Group X", "Group Y"],
     marker_colors=cmc,
+    marker_size=16,
 )
 
 fig.update_layout(
@@ -129,32 +135,27 @@ fig.show()
 ### Sorting and Removing Zero Values
 
 ```python
-from plotly.subplots import make_subplots
-
 # Data - Source https://github.com/hms-dbmi/upset-altair-notebook
-df0 = pd.read_csv(
+df = pd.read_csv(
     'https://raw.githubusercontent.com/hms-dbmi/upset-altair-notebook/master/data/covid_symptoms_table.csv',
     usecols=lambda x: x != 'id'
 )
 
 # Plotting
 fig = plot_upset(
-    dataframes=[df0],
+    dataframes=[df],
     legendgroups=["COVID-19 Symptoms"],
     exclude_zeros=True,
     sorted_x="d",
-    subplot_config=make_subplots(
-        rows=2, cols=2,
-        row_heights=[0.7, 0.3],
-        column_widths=[0.2, 0.8],
-        vertical_spacing = 0.05,
-        horizontal_spacing = 0.2,
-        shared_xaxes=True
-    ),
+    row_heights=[0.7, 0.3],
+    column_widths=[0.2, 0.8],
+    vertical_spacing = 0.05,
+    horizontal_spacing = 0.21,
+    marker_size=10,
 )
 
 fig.update_layout(
-    width=900,
+    width=830,
     font_family="Jetbrains Mono",
 )
 
