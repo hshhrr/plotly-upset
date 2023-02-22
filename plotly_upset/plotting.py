@@ -289,7 +289,7 @@ def plot_upset(
                 legendgroup='True',
                 name='True',
                 mode='markers', 
-                marker=dict(line_width=1, color='#000000', line_color='#000000', symbol='circle', size=marker_size),
+                marker=dict(line_width=0, color='#000000', line_color='#000000', symbol='circle', size=marker_size),
                 showlegend=False,
             ),
              row=2, col=2
@@ -305,7 +305,7 @@ def plot_upset(
                 legendgroup='False',
                 name='False',
                 mode='markers', 
-                marker=dict(line_width=1, color='#FFFFFF', line_color='#000000', symbol='circle', size=marker_size),
+                marker=dict(line_width=0, color='#C2C2C2', line_color='#000000', symbol='circle', size=marker_size),
                 showlegend=False,
             ),
             row=2, col=2
@@ -320,6 +320,7 @@ def plot_upset(
                     legendgroup='True',
                     name='True',
                     mode='lines',
+                    line_width=2,
                     line_color='#000000',
                     showlegend=False,
                 ),
@@ -332,7 +333,7 @@ def plot_upset(
                     y0=(i - 0.5),
                     y1=(i + 0.5),
                     layer="below",
-                    fillcolor="#BFBFBF",
+                    fillcolor="#EBEBEB",
                     line_width=0,
                     row=2, col=2
                 )
