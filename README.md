@@ -147,9 +147,8 @@ fig = plot_upset(
     legendgroups=["COVID-19 Symptoms"],
     exclude_zeros=True,
     sorted_x="d",
-    row_heights=[0.7, 0.3],
+    sorted_y="a",
     column_widths=[0.2, 0.8],
-    vertical_spacing = 0.05,
     horizontal_spacing = 0.21,
     marker_size=10,
 )
