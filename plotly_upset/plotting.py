@@ -189,8 +189,6 @@ def plot_upset(
     elif horizontal_spacing > 1.0:
         raise Exception("Invalid Horizontal Spacing.")
 
-    print(sum(row_heights))
-
     if set_names is not None:
         sets = set_names
     else:
