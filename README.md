@@ -1,3 +1,9 @@
+
+<div align="center">
+	<img alt="styx-icon" style="width:256px;height:256px;" src="https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/plotly-upset.png?raw=true">
+</div>
+
+
 # plotly-upset
 UpSet intersection visualization method for Plolty (Python-only)
 
