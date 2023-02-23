@@ -158,3 +158,38 @@ def get_sorted_nodes_and_edges(t: tuple, f: tuple, edges: list, sorted_sequence:
             _edges.append(temp_e)
 
     return (_xt, yt), (_xf, yf), _edges
+
+
+def get_xaxis_marginal_data(df, marginal_df, string_repr: list):
+    intersection_data = list()
+
+    for x in string_repr:
+        _df = df.copy(deep=True)
+        temp_list = list()
+        for i, v in enumerate(x):
+            _df = _df[_df.iloc[:, i] == int(v)]
+            temp_list = [marginal_df[i] for i in _df.index]
+                    
+        intersection_data.append(temp_list)
+
+    x, y = list(), list()
+
+    for i, a in enumerate(intersection_data):
+        for v in a:
+            x.append(string_repr[i])
+            y.append(v)
+
+    return x, y
+
+
+def get_yaxis_marginal_data(df, marginal_data, sets: list = None):
+    individual_data = [marginal_data[df.iloc[:, i] == 1] for i in range(len(df.columns))]
+
+    x, y = list(), list()
+
+    for i, a in enumerate(individual_data):
+        for v in a:
+            x.append(sets[i])
+            y.append(v)
+
+    return x, y
