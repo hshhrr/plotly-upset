@@ -4,8 +4,19 @@
 </div>
 
 
-# plotly-upset
-UpSet intersection visualization method for Plolty (Python-only)
+<h1 align="center">
+    plotly-upset
+</h1>
+
+<p align="center">
+    <i>
+        UpSet intersection visualization utility for Plolty (Python-only)
+    </i>
+</p>
+
+
+<!-- # plotly-upset
+UpSet intersection visualization method for Plolty (Python-only) -->
 
 ## Installation
 
