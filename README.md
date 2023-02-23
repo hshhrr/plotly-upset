@@ -3,6 +3,7 @@
 	<img alt="plotly-upset-icon" style="width:256px;height:256px;" src="https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/plotly-upset-alt.png?raw=true">
 </div>
 
+<br/>
 
 <h1 align="center">
     plotly-upset
