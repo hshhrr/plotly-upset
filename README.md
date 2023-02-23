@@ -164,6 +164,78 @@ fig.show()
 ![example-05](https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/example-05.png?raw=true)
 
 
+### Adding Marginal Plots
+
+```python
+# Data - Source https://github.com/hms-dbmi/UpSetR/blob/master/inst/extdata/movies.csv
+movies = pd.read_csv(
+    "https://raw.githubusercontent.com/hms-dbmi/UpSetR/master/inst/extdata/movies.csv",
+    sep=';'
+)
+
+# Preprocessing - Taking 4 categories with most number of samples
+df = movies.drop(columns=['Name', 'ReleaseDate', 'AvgRating', 'Watches'])
+x = [(df[cat].sum(), cat) for cat in df]
+x = np.array(sorted(x, reverse=True))
+x = x.T[1][:4]
+df = movies[x]
+
+# Plotting
+fig = plot_upset(
+    dataframes=[df],
+    legendgroups=["Movie Categories - X"],
+    exclude_zeros=True,
+    sorted_x="d",
+    sorted_y="a",
+    row_heights=[0.6, 0.4],
+    vertical_spacing = 0.,
+    horizontal_spacing = 0.15,
+    marginal_data=[movies['ReleaseDate'], movies['AvgRating'], movies['Watches']],
+    marginal_title=['ReleaseDate', 'AvgRating', 'Watches']
+)
+
+fig.update_layout(
+    height=650,
+    width=830,
+    font_family="Jetbrains Mono",
+)
+
+fig.show()
+```
+
+![example-06](https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/example-06.png?raw=true)
+
+
+### Adding Marginal Plots - Both Axis
+
+```python
+# Plotting
+fig = plot_upset(
+    dataframes=[df],
+    legendgroups=["Movie Categories - X"],
+    exclude_zeros=True,
+    sorted_x="d",
+    sorted_y="a",
+    column_widths=[0.3, 0.7],
+    vertical_spacing = 0.,
+    horizontal_spacing = 0.05,
+    marginal_y=True,
+    marginal_data=[movies['ReleaseDate'], movies['AvgRating']],
+    marginal_title=['ReleaseDate', 'AvgRating'],
+)
+
+fig.update_layout(
+    height=600,
+    width=830,
+    font_family="Jetbrains Mono",
+)
+
+fig.show()
+```
+
+![example-07](https://raw.githubusercontent.com/hshhrr/plotly-upset/main/img/example-07.png?raw=true)
+
+
 ## Citation
 
 If you use an UpSet figure in a publication using this library, please cite the [original paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/).
